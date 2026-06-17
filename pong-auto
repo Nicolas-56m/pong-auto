@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pong Auto</title>
+
+<style>
+body{
+    margin:0;
+    background:#000;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+canvas{
+    border:3px solid white;
+}
+</style>
+</head>
+<body>
+
+<canvas id="pong" width="800" height="400"></canvas>
+
+<script>
+
+const canvas = document.getElementById("pong");
+const ctx = canvas.getContext("2d");
+
+const paddleWidth = 10;
+const paddleHeight = 100;
+
+let leftY = 150;
+let rightY = 150;
+
+let ballX = canvas.width / 2;
+let ballY = canvas.height / 2;
+
+let speedX = 5;
+let speedY = 4;
+
+function drawRect(x,y,w,h){
+    ctx.fillStyle = "white";
+    ctx.fillRect(x,y,w,h);
+}
+
+function drawBall(x,y,r){
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fill();
+}
+
+function update(){
+
+    ballX += speedX;
+    ballY += speedY;
+
+    leftY += (ballY - (leftY + paddleHeight/2)) * 0.08;
+    rightY += (ballY - (rightY + paddleHeight/2)) * 0.08;
+
+    if(ballY <= 0 || ballY >= canvas.height){
+        speedY *= -1;
+    }
+
+    if(
+        ballX <= paddleWidth &&
+        ballY >= leftY &&
+        ballY <= leftY + paddleHeight
+    ){
+        speedX *= -1;
+    }
+
+    if(
+        ballX >= canvas.width - paddleWidth &&
+        ballY >= rightY &&
+        ballY <= rightY + paddleHeight
+    ){
+        speedX *= -1;
+    }
+
+    if(ballX < 0 || ballX > canvas.width){
+        ballX = canvas.width/2;
+        ballY = canvas.height/2;
+    }
+}
+
+function draw(){
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    drawRect(0,leftY,paddleWidth,paddleHeight);
+    drawRect(canvas.width-paddleWidth,rightY,paddleWidth,paddleHeight);
+
+    drawBall(ballX,ballY,8);
+}
+
+function gameLoop(){
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+
+</script>
+
+</body>
+</html>
